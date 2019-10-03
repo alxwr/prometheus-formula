@@ -13,6 +13,7 @@ include:
   - {{ sls_archive_install if prometheus.use_upstream_archive else sls_package_install }}
   - {{ sls_config_users }}
 
+    {%- if prometheus.dir.args %}
 prometheus-config-file-args-file-directory:
   file.directory:
     - name: {{ prometheus.dir.args }}
@@ -22,6 +23,7 @@ prometheus-config-file-args-file-directory:
     - makedirs: True
     - require:
       - sls: '{{ sls_archive_install if prometheus.use_upstream_archive else sls_package_install }}.*'
+    {%- endif %}
 
     {%- for name in prometheus.wanted %}
         {%- if name in prometheus.config or name in prometheus.service %}
@@ -39,23 +41,13 @@ prometheus-config-args-{{ name }}-data-dir:
     - makedirs: True
     - watch_in:
       - service: prometheus-service-running-{{ name }}-service-running
+                {%- if prometheus.dir.args %}
     - require:
       - file: prometheus-config-file-args-file-directory
+                {%- endif %}
 
             {%- endif %}
             {%- if args and grains.os_family == 'FreeBSD' %}
-                {%- if 'web.listen-address' in args.keys() %}
-
-prometheus-config-args-args-web-listen-address:
-  sysrc.managed:
-    - name: {{ name }}_listen_address
-    - value: {{ args.pop('web.listen-address') }}
-    - watch_in:
-      - service: prometheus-service-running-{{ name }}-service-running
-    - require:
-      - file: prometheus-config-file-args-file-directory
-
-                {%- endif %}
                 {%- if 'collector.textfile.directory' in args.keys() %}
 
 prometheus-config-args-{{ name }}-collector-textfile-directory:
@@ -64,22 +56,35 @@ prometheus-config-args-{{ name }}-collector-textfile-directory:
     - value: {{ args.pop('collector.textfile.directory') }}
     - watch_in:
       - service: prometheus-service-running-{{ name }}-service-running
-    - require:
-      - file: prometheus-config-file-args-file-directory
 
                 {%- endif %}
                 {%- if 'storage.tsdb.path' in args.keys() %}
 
-prometheus-config-args-{{ name }}-{{ key }}:
+prometheus-config-args-{{ name }}-storage-tsdb-path:
   sysrc.managed:
     - name: {{ name }}_data_dir
     - value: {{ args.pop('storage.tsdb.path') }}
     - watch_in:
       - service: prometheus-service-running-{{ name }}-service-running
-    - require:
-      - file: prometheus-config-file-args-file-directory
 
                 {%- endif %}
+                {%- if name in ['node_exporter'] and 'web.listen-address' in args.keys() %}
+
+prometheus-config-args-{{ name }}-web-listen-address:
+  sysrc.managed:
+    - name: {{ name }}_listen_address
+    - value: {{ args.pop('web.listen-address') }}
+    - watch_in:
+      - service: prometheus-service-running-{{ name }}-service-running
+
+                {%- endif %}
+
+prometheus-config-args-{{ name }}-config-file:
+  sysrc.managed:
+    - name: {{ name }}_config
+    - value: {{ prometheus.dir.etc }}/{{ name }}.yml
+    - watch_in:
+      - service: prometheus-service-running-{{ name }}-service-running
 
 prometheus-config-args-{{ name }}-all:
   sysrc.managed:
@@ -89,8 +94,6 @@ prometheus-config-args-{{ name }}-all:
     - value: "{{ concat_args(args) }} >/dev/null 2>&1"
     - watch_in:
       - service: prometheus-service-running-{{ name }}-service-running
-    - require:
-      - file: prometheus-config-file-args-file-directory
 
             {%- elif grains.os_family != 'FreeBSD' %}
 
@@ -101,8 +104,10 @@ prometheus-config-args-{{ name }}-file-managed:
         ARGS="{{ concat_args(args) }}"
     - watch_in:
       - service: prometheus-service-running-{{ name }}-service-running
+                {%- if prometheus.dir.args %}
     - require:
       - file: prometheus-config-file-args-file-directory
+                {%- endif %}
 
             {%- endif %}
         {%- endif %}

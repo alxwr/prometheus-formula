@@ -33,7 +33,8 @@ Alpine: {}
 FreeBSD:
   rootgroup: wheel
   dir:
-    config: /usr/local/etc
+    args: false
+    etc: /usr/local/etc/prometheus
   pkg:
     prometheus:
       archive_hash: 94a63f14baeadab2f17b5ae0bbeda6688e6d06f964ef4e32c2954a0ecf3996a1
