@@ -7,7 +7,7 @@ prometheus:
          {%- if grains.os_family not in ('Debian',) %}
     - alertmanager
          {%- endif %}
-    - node_explorer
+    - node_exporter
     # no memcached_exporter in upstream repo - only archive
     # memcached_exporter
 
