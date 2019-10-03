@@ -16,8 +16,8 @@ include:
 prometheus-config-file-etc-file-directory:
   file.directory:
     - name: {{ prometheus.dir.etc }}
-    - user: prometheus
-    - group: prometheus
+    - user: root
+    - group: {{ prometheus.rootgroup }}
     - mode: 755
     - makedirs: True
     - require:
