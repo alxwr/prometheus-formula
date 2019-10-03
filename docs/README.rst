@@ -121,10 +121,3 @@ This state will uninstall the prometheus linux alternatives for archives only.
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This state will uninstall the prometheus upstream package repository only.
-
-``prometheus.exporters``
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-This state will manage prometheus exporters according to Pillar ``prometheus:exporters``.
-It includes sub-states like ``prometheus.exporters.node``.
-If you don't want to use Pillar data for this you may use the sub-states directly.
