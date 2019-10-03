@@ -21,16 +21,21 @@ prometheus:
     var: /var/lib/prometheus
     args: /etc/default
     service: /usr/lib/systemd/system
+    textfile_exporters: /opt/prometheus/textfile_exporters
 
   service:
     prometheus:
       args:
         web.listen-address: 0.0.0.0:9090
     alertmanager: {}
+    node_exporter:
+      args:
+        collector.textfile.directory: /var/tmp/node_exporter
 
   config:
     prometheus: {}
     alertmanager: {}
+    node_exporter: {}
 
   pkg:
     prometheus:
@@ -113,3 +118,6 @@ prometheus:
 
   linux:
     altpriority: 0   ## 'Alternatives system' priority: zero disables (default)
+
+  node_exporter:
+    textfile_collectors: {}

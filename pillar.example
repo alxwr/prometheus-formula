@@ -35,6 +35,7 @@ prometheus:
     node_exporter:
       args:
         web.listen-address: ":9110"
+        # collector.textfile.directory: /var/tmp/node_exporter
 
   tofs:
     # The files_switch key serves as a selector for alternative
@@ -164,3 +165,6 @@ prometheus:
     # 'Alternatives system' priority: zero disables (default)
     # yamllint disable-line rule:braces
     altpriority: {{ range(1, 9100000) | random }}
+
+  node_exporter:
+    textfile_collectors: {}
