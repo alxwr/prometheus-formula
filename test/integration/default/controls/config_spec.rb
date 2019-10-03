@@ -11,4 +11,10 @@ control 'Prometheus configuration' do
     its('content') { should include 'global:' }
     its('content') { should include 'alerting:' }
   end
+
+  describe file('/opt/prometheus/textfile_exporters/ipmitool') do
+    it { should be_file }
+    it { should be_owned_by 'root' }
+    its('mode') { should cmp '0755' }
+  end
 end

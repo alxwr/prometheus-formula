@@ -167,4 +167,13 @@ prometheus:
     altpriority: {{ range(1, 9100000) | random }}
 
   node_exporter:
-    textfile_collectors: {}
+    textfile_collectors:
+      ipmitool:
+        # You must enable individual collectors
+        enable: true
+        # pkg: ipmitool
+      smartmon:
+        enable: true
+        # pkg: smartmontools
+        # bash_pkg: bash
+        # smartctl: /usr/sbin/smartctl

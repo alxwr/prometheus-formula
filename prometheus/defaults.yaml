@@ -120,4 +120,14 @@ prometheus:
     altpriority: 0   ## 'Alternatives system' priority: zero disables (default)
 
   node_exporter:
-    textfile_collectors: {}
+    textfile_collectors:
+      ipmitool:
+        enable: false
+        remove: false
+        pkg: ipmitool
+      smartmon:
+        enable: false
+        remove: false
+        pkg: smartmontools
+        bash_pkg: bash
+        smartctl: /usr/sbin/smartctl
