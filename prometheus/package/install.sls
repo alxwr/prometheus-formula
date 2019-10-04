@@ -16,7 +16,7 @@ include:
 
 prometheus-package-install-{{ name }}-installed:
   pkg.installed:
-    - name: {{ name }}
+    - name: {{ prometheus.pkg.get(name, {}).get('name', name) }}
 
         {%- endif %}
     {%- endfor %}

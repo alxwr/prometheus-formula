@@ -10,7 +10,10 @@
 # you will need to provide at least an empty dict in this file, e.g.
 # osfamilymap: {}
 ---
-Debian: {}
+Debian:
+  pkg:
+    node_exporter:
+      name: prometheus-node-exporter
 
 RedHat:
   pkg:
