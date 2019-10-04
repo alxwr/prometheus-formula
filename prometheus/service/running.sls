@@ -25,22 +25,28 @@ prometheus-config-file-var-file-directory:
 
     {%- for name in prometheus.wanted %}
         {%- if name in prometheus.service %}
+
+            {%- set service_name = prometheus.service.get(name, {}).get('name', False) %}
+            {%- if not service_name %}
+                {%- set service_name = name %}
+            {%- endif %}
+
             {%- if grains.kernel|lower == 'linux' %}
 
 prometheus-service-running-{{ name }}-service-unmasked:
   service.unmasked:
-    - name: {{ name }}
+    - name: {{ service_name }}
                 {%- if 'prometheus' in prometheus.wanted %}
     - require:
       - file: prometheus-config-file-var-file-directory
                 {%- endif %}
     - onlyif:
-       -  systemctl list-unit-files | grep {{ name }} >/dev/null 2>&1
+       -  systemctl list-units | grep {{ service_name }} >/dev/null 2>&1
             {%- endif %}
 
 prometheus-service-running-{{ name }}-service-running:
   service.running:
-    - name: {{ name }}
+    - name: {{ service_name }}
     - enable: True
             {%- if name in prometheus.config %}
     - watch:
@@ -52,7 +58,7 @@ prometheus-service-running-{{ name }}-service-running:
             {%- endif %}
             {%- if grains.kernel|lower == 'linux' %}
       - service: prometheus-service-running-{{ name }}-service-unmasked
-    - onlyif: systemctl list-unit-files | grep {{ name }} >/dev/null 2>&1
+    - onlyif: systemctl list-units | grep {{ service_name }} >/dev/null 2>&1
             {%- endif %}
 
         {%- endif %}

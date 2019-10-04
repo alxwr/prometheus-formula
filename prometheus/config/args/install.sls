@@ -97,9 +97,17 @@ prometheus-config-args-{{ name }}-all:
 
             {%- elif grains.os_family != 'FreeBSD' %}
 
+                {%- set args_file = prometheus.pkg.get(name, {}).get('args_file', False) %}
+                {%- if not args_file %}
+                    {%- set args_file = prometheus.dir.args | path_join(name) %}
+                    {%- if not grains.os_family in ['Debian'] %}
+                        {%- set args_file = "{}.sh".format(args_file) %}
+                    {%- endif %}
+                {%- endif %}
+
 prometheus-config-args-{{ name }}-file-managed:
   file.managed:
-    - name: {{ prometheus.dir.args }}/{{ name }}.sh
+    - name: {{ args_file }}
     - contents: |
         ARGS="{{ concat_args(args) }}"
     - watch_in:

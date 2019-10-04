@@ -8,12 +8,17 @@
     {%- for name in prometheus.wanted %}
        {%- if name in prometheus.service %}
 
+            {%- set service_name = prometheus.service.get(name, {}).get('name', False) %}
+            {%- if not service_name %}
+                {%- set service_name = name %}
+            {%- endif %}
+
 prometheus-service-clean-{{ name }}-service-dead:
   service.dead:
     - name: {{ name }}
     - enable: False
             {%- if grains.kernel|lower == 'linux' %}
-    - onlyif: systemctl list-unit-files | grep {{ name }} >/dev/null 2>&1
+    - onlyif: systemctl list-units | grep {{ service_name }} >/dev/null 2>&1
             {%- endif %}
   file.absent:
     - name: {{ prometheus.dir.service }}/{{ name }}.service
