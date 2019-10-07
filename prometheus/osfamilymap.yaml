@@ -64,6 +64,10 @@ FreeBSD:
       archive_hash: ebcd21dc25e439eed64559e89cd7da9a94073d5ff321a8a3a4214ac2ebe04e34
     statsd_exporter:
       archive_hash: f345dff6311501f09bb5b6ba1128e925d504c6325ee97ad91a975f2be0d44da9
+  node_exporter:
+    textfile_collectors:
+      smartmon:
+        smartctl: /usr/local/sbin/smartctl
 
 OpenBSD:
   rootgroup: wheel
